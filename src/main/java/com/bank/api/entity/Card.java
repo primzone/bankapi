@@ -14,11 +14,12 @@ public class Card {
     private String cardNumber;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "card_id")
+    @JoinColumn(name = "account_id")
     @JsonIgnore
     private Account account;
 
 
+    private boolean confirmation;
 
     public Card() {
     }
@@ -26,6 +27,7 @@ public class Card {
     public Card(String cardNumber, Account account) {
         this.cardNumber = cardNumber;
         this.account = account;
+
     }
 
     public long getId() {
@@ -53,5 +55,11 @@ public class Card {
         this.account = account;
     }
 
+    public boolean isConfirmation() {
+        return confirmation;
+    }
 
+    public void setConfirmation(boolean confirmation) {
+        this.confirmation = confirmation;
+    }
 }

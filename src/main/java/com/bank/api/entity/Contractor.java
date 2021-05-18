@@ -3,20 +3,35 @@ package com.bank.api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Contractor {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @JsonIgnore
     private long id;
 
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "contractor_id")
+    @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "contractor")
+    @JsonIgnore
+    private List<Account> accounts;
+
+    public void addAccountToContractor(Account account){
+        if (accounts == null){
+            accounts = new ArrayList<>();
+        }
+        accounts.add(account);
+        account.setContractor(this);
+    }
 
     public Contractor() {
     }
@@ -48,5 +63,13 @@ public class Contractor {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }

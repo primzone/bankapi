@@ -25,7 +25,6 @@ public class UserController {
 
         List<User> allEmployees = userService.getAllUsers();
         return allEmployees;
-
     }
 
 }

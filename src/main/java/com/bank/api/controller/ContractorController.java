@@ -17,8 +17,7 @@ public class ContractorController {
     @Autowired
     ContractorService contractorService;
 
-
-    @GetMapping("/contractors/{id}")
+    @GetMapping("/contractors/{id}")//просмотр всех контрагентов по userId
     public List<Contractor> getAllContractorsByUserId(@PathVariable long id){
 
         List<Contractor> allContractorsByUserId = contractorService.getAllContractorsByUserId(id);
@@ -26,15 +25,11 @@ public class ContractorController {
 
     }
 
-    @PostMapping("/contractors")
-    public Contractor addUser(@RequestBody Map<String, String> map){
-
+    @PostMapping("/contractors")//добавить контрагента к юзеру через userId
+    public Contractor addContractor(@RequestBody Map<String, String> map){
         contractorService.saveContractor(Long.parseLong(map.get("userId")), map.get("contractorName"));
       //  return contractor;
         return new Contractor();
-
     }
-
-
 
 }

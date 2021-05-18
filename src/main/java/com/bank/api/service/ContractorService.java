@@ -2,6 +2,7 @@ package com.bank.api.service;
 
 import com.bank.api.entity.Contractor;
 import com.bank.api.entity.User;
+import com.bank.api.repository.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Service
 public class ContractorService {
     @Autowired
-    ContractorService contractorService;
+    ContractorRepository contractorRepository;
     @Autowired
     UserService userService;
 
@@ -37,5 +38,10 @@ public class ContractorService {
         }
 
 
+    }
+
+
+    public Optional<Contractor> findById(long contractorId) {
+        return contractorRepository.findById(contractorId);
     }
 }

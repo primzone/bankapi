@@ -2,7 +2,9 @@ package com.bank.api.entity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usr")
@@ -18,6 +20,16 @@ public class User {
     private List<Account> accounts;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Contractor> contractors;
+
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "users_contractors",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "contractor_id")
+//    )
+//    private Set<Contractor> contractorss = new HashSet<>();
+
 
 
     public void addAccountToUser(Account account){

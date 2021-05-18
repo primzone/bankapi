@@ -1,7 +1,5 @@
 package com.bank.api.entity;
 
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -17,33 +15,38 @@ public class Account {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
+    @Column(unique = true)
     private String accountNumber;
 
-    private long balance;
+    private double balance;
 
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", nullable = true)
     @JsonIgnore
     private User user;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contractor_id", nullable = true)
+    @JsonIgnore
+    private Contractor contractor;
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
     @JsonIgnore
     private List<Card> cards;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaction")
     @JsonIgnore
-    @JoinTable(
-            name = "account_transaction"
-            , joinColumns = {@JoinColumn(name = "account_id"), @JoinColumn(name = "account_id")}
-            , inverseJoinColumns = {@JoinColumn(name = "senderAccount_id"), @JoinColumn(name = "recipientAccount_id") }
-    )
-    private Set<Transaction> transactions = new HashSet<>();
+    private List<Payment> payments;
 
-
-
-
+    public void addPaymentToAccount(Payment payment){
+        if (payments == null){
+            payments = new ArrayList<>();
+        }
+        payments.add(payment);
+        payment.setAccount(this);
+    }
 
 
     public void addCardToAccount(Card card){
@@ -54,7 +57,6 @@ public class Account {
         card.setAccount(this);
     }
 
-
     public Account() {
     }
 
@@ -63,6 +65,13 @@ public class Account {
         this.user = user;
         this.balance = 0;
     }
+
+    public Account(String accountNumber, Contractor contractor) {
+        this.accountNumber = accountNumber;
+        this.contractor = contractor;
+        this.balance = 0;
+    }
+
 
     public long getId() {
         return id;
@@ -96,11 +105,28 @@ public class Account {
         this.cards = cards;
     }
 
-    public long getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(long balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public Contractor getContractor() {
+        return contractor;
+    }
+
+    public void setContractor(Contractor contractor) {
+        this.contractor = contractor;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
 }
