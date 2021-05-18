@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class Card {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @JsonIgnore
     private long id;
 
     private String cardNumber;

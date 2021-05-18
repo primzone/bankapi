@@ -5,38 +5,40 @@ import com.bank.api.entity.User;
 import com.bank.api.repository.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
+
 public class ContractorService {
     @Autowired
     ContractorRepository contractorRepository;
     @Autowired
     UserService userService;
 
-    public List<Contractor> getAllContractorsByUserId(long id) {
+    public Set<Contractor> getAllContractorsByUserId(long id) {
 
         Optional<User> byId = userService.findById(id);
 
-        if (!byId.isPresent()) return new ArrayList<Contractor>();
+        if (!byId.isPresent()) return new HashSet<Contractor>();
 
 
 
         return byId.get().getContractors();
     }
 
-    public void saveContractor(long userId, String contractorName) {
+    @Transactional
+    public Contractor saveContractor(long userId, String contractorName) {
 
+        //получаем юзера по айди
         Optional<User> byId = userService.findById(userId);
+        //создаем нового контрагента
+        Contractor contractor = new Contractor(contractorName, byId.get());
+        //сохраняем
+        contractorRepository.save(contractor);
 
-        if (byId.isPresent()){
-            byId.get().addContractorToUser(new Contractor(contractorName, byId.get()));
-            userService.saveUser(byId.get());
-        }
-
+        return contractor;
 
     }
 

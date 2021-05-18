@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Contractor {
@@ -16,10 +18,21 @@ public class Contractor {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    @JsonIgnore
+//    private User user;
+
+
+    @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
-    private User user;
+    @JoinTable(
+            name = "users_contractors",
+            joinColumns = @JoinColumn(name = "contractor_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users = new HashSet<>();
+
 
     @OneToMany(mappedBy = "contractor")
     @JsonIgnore
@@ -38,7 +51,14 @@ public class Contractor {
 
     public Contractor(String name, User user) {
         this.name = name;
-        this.user = user;
+        this.users.add(user);
+    }
+
+    public void addUserToContractor(User user){
+        if (users == null){
+            users = new HashSet<>();
+        }
+        users.add(user);
     }
 
     public long getId() {
@@ -57,12 +77,12 @@ public class Contractor {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public Set<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     public List<Account> getAccounts() {

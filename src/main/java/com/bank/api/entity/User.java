@@ -18,17 +18,17 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Account> accounts;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Contractor> contractors;
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+//    private List<Contractor> contractors;
 
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "users_contractors",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "contractor_id")
-//    )
-//    private Set<Contractor> contractorss = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_contractors",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contractor_id")
+    )
+    private Set<Contractor> contractors = new HashSet<>();
 
 
 
@@ -40,12 +40,12 @@ public class User {
         account.setUser(this);
     }
 
+
+
+
     public void addContractorToUser(Contractor contractor){
-        if (accounts == null){
-            accounts = new ArrayList<>();
-        }
+
         contractors.add(contractor);
-        contractor.setUser(this);
     }
 
     public User() {
@@ -85,11 +85,11 @@ public class User {
         this.accounts = accounts;
     }
 
-    public List<Contractor> getContractors() {
+    public Set<Contractor> getContractors() {
         return contractors;
     }
 
-    public void setContractors(List<Contractor> contractors) {
+    public void setContractors(Set<Contractor> contractors) {
         this.contractors = contractors;
     }
 }
