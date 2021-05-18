@@ -1,0 +1,95 @@
+
+###  Добавление нового юзера по имени
+POST http://localhost:8080/api/employees/users
+Content-Type: application/json
+
+{
+  "name":"Julia"
+}
+
+
+###  Добавление счета для юзера по id
+POST http://localhost:8080/api/employees/accounts
+Content-Type: application/json
+
+{
+  "userId":"1"
+}
+
+### добавление счета контрагенту по contractorId
+POST http://localhost:8080/api/employees/contractor/accounts
+Content-Type: application/json
+
+{
+  "contractorId":"1"
+}
+
+<> 2021-05-18T104807.500.json
+
+### Выпуск новой карты по счету
+POST http://localhost:8080/api/users/cards
+Content-Type: application/json
+
+{
+  "accountNumber":"64756938751523098125"
+}
+
+### Пополнение баланса счета по номеру карты
+POST http://localhost:8080/api/users/cards/refill
+Content-Type: application/json
+
+{
+  "cardNumber":"6743 8237 9032 8734",
+  "amount":"36000"
+}
+
+### Просмотр списка карт
+GET http://localhost:8080/api/users/cards/1
+Accept: application/json
+
+
+### Проверка баланса на всех счетах
+GET http://localhost:8080/api/users/accounts/1
+Accept: application/json
+
+<> 2021-05-18T125854.200.json
+
+
+
+
+
+
+
+### Добавление контрагента юзеру
+POST http://localhost:8080/api/users/contractors
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "contractorName": "Roma"
+}
+
+
+### Вывести весь список контрагентов юзера по id
+GET http://localhost:8080/api/users/contractors/1
+Accept: application/json
+
+
+### перевод средств контрагенту по номеру карты
+POST http://localhost:8080/api/users/cards/transfer
+Content-Type: application/json
+
+{
+  "cardNumber": "1345 2412 4608 8510",
+  "contractorCardNumber": "4232 5324 6534 3562",
+  "amount": "45000"
+}
+
+
+### Потверждение перевода по номеру транзакции
+PUT http://localhost:8080/api/employees/transaction
+Content-Type: application/json
+
+{
+  "transactionNumber": "2"
+}
