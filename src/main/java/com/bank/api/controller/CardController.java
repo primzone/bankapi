@@ -34,19 +34,21 @@ public class CardController {
     }
 
     @PostMapping("/cards")//выпуск новой карты по счету
-    public void addCardToAccount(@RequestBody ObjectNode jsonNodes){
+    public MyResponse addCardToAccount(@RequestBody ObjectNode jsonNodes){
 
         cardService.addCardToUser(jsonNodes.get("accountNumber").asText());
+        return new MyResponse(true);
     }
 
 
 
 
     @PostMapping("/cards/refill")//пополнение карты (счета через карту)
-    public void refillAccountByCard(@RequestBody ObjectNode jsonNodes){
+    public MyResponse refillAccountByCard(@RequestBody ObjectNode jsonNodes){
 
        cardService.refillAccountByCard(jsonNodes.get("cardNumber").asText(), jsonNodes.get("amount").asDouble());
 
+       return new MyResponse(true);
     }
 
     @PostMapping("/cards/transfer")//перевод контрагенту средств

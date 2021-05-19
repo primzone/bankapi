@@ -33,8 +33,6 @@ create table contractor (
 
 create table payment (
                          id int8 not null,
-                         sender_account_number varchar(255),
-                         recipient_account_number varchar(255),
                          account_id int8,
                          transaction_id int8,
                          primary key (id)
@@ -45,10 +43,10 @@ create table transaction (
                              amount float8 not null,
                              confirmation boolean not null,
                              recipient_account_number_id int8 not null,
-                             recipient_card_number varchar(255),
+                             recipient_card_number varchar(19),
                              sender_account_number_id int8 not null,
-                             sender_card_number varchar(255),
-                             transaction_number int8 not null,
+                             sender_card_number varchar(19),
+                             transaction_number int8 not null UNIQUE,
                              primary key (id)
 );
 

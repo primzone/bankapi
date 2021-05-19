@@ -19,7 +19,6 @@ public class EmployeeController {
     @PostMapping("/users") //добавление нового юзера
     public MyResponse addUser(@RequestBody User user){
         employeeService.saveUser(user);
-
         return new MyResponse(true);
     }
 

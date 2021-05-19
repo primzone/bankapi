@@ -27,10 +27,10 @@ public class ContractorController {
     }
 
     @PostMapping("/contractors")//добавить контрагента к юзеру через userId
-    public ResponseEntity<MyResponse>  addContractor(@RequestBody JsonNode jsonNode){
+    public MyResponse addContractor(@RequestBody JsonNode jsonNode){
 
         contractorService.saveContractor(jsonNode.get("userId").asLong(), jsonNode.get("contractorName").asText());
-        return new ResponseEntity<>(new MyResponse(true), HttpStatus.OK);
+        return new MyResponse(true);
 
 
     }

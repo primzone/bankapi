@@ -19,15 +19,4 @@ public class UserGlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler
-    public ResponseEntity<UserIncorrectData> handleException(Exception exception){
-
-        UserIncorrectData data = new UserIncorrectData();
-        data.setInfo(exception.getMessage());
-
-        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-
-    }
-
-
 }

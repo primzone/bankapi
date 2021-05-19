@@ -4,6 +4,7 @@ import com.bank.api.entity.Account;
 import com.bank.api.entity.Card;
 import com.bank.api.entity.Transaction;
 import com.bank.api.entity.User;
+import com.bank.api.exception_handling.card_exceptions.CardNotConfirmedException;
 import com.bank.api.exception_handling.transaction_exceptions.TransactionConfirmedException;
 import com.bank.api.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +45,14 @@ public class EmployeeService {
 
     public void confirmCard(String cardNumber) {
 
-        Card byCardNumber = cardService.findByCardNumber(cardNumber);
-        byCardNumber.setConfirmation(true);
-        cardService.save(byCardNumber);
+        Card card = cardService.findByCardNumber(cardNumber);
+        if (card.isConfirmation()){
+            throw new CardNotConfirmedException("Card already confirmed");
+        }
+        else {
+            card.setConfirmation(true);
+            cardService.save(card);
+        }
 
     }
 
@@ -55,9 +61,10 @@ public class EmployeeService {
 
         //Находим транзакцию по номеру
         Transaction bytransactionNumber = transactionService.findByTransactionNumber(transactionNumber);
-        //Устанавливаем Потверждение = true
+
         if (bytransactionNumber.isConfirmation())
             throw new TransactionConfirmedException("transaction " + transactionNumber + " has already been confirmed");
+        //Устанавливаем Потверждение = true
         bytransactionNumber.setConfirmation(true);
 
         //Находим счета по отправителя и получателся по транзакции

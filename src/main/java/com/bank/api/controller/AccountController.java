@@ -32,7 +32,6 @@ public class AccountController {
 
         return allAccounts;
 
-
     }
 
 }

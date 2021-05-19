@@ -3,6 +3,7 @@ package com.bank.api.service;
 import com.bank.api.entity.*;
 import com.bank.api.exception_handling.account_exceptions.InsufficientFundsOnAccountexception;
 import com.bank.api.exception_handling.account_exceptions.NoSuchAccountException;
+import com.bank.api.exception_handling.card_exceptions.CardNotConfirmedException;
 import com.bank.api.exception_handling.card_exceptions.NoSuchCardException;
 import com.bank.api.exception_handling.user_exceptions.NoSuchUserException;
 import com.bank.api.repository.CardRepository;
@@ -48,7 +49,7 @@ public class CardService {
     }
 
     public void addCardToUser(String accountNumber) {
-        //находим счет, к но номеру
+        //находим счет, по номеру счета
         Account byAccountNumber = accountService.findByAccountNumber(accountNumber);
         //добавляем к счету карту и сохраням
         byAccountNumber.addCardToAccount(new Card(Utils.generateCardNumber(), byAccountNumber));
@@ -61,12 +62,19 @@ public class CardService {
 
         //находим счет по номеру карты
        // Account byAccountNumber = accountService.findByCardsIsContaining(findByCardNumber(cardNumber));
-        Account byAccountNumber = accountService.findById(findByCardNumber(cardNumber).getId());
+        Card card = findByCardNumber(cardNumber);
+        checkCardConfirmation(card);
+        Account account = findByCardNumber(cardNumber).getAccount();
 
         //добавляем к балансу
-        byAccountNumber.setBalance(byAccountNumber.getBalance() + amount);
+        account.setBalance(account.getBalance() + amount);
         //сохраняем
-        accountService.save(byAccountNumber);
+        accountService.save(account);
+    }
+
+    public void checkCardConfirmation(Card card) {
+        if (!card.isConfirmation())
+            throw new CardNotConfirmedException("Card " + card.getCardNumber() + " not confirmed");
     }
 
     @Transactional
@@ -97,19 +105,15 @@ public class CardService {
 
     }
 
-
     public Card findByCardNumber(String cardNumber) {
 
         Card byCardNumber = cardRepository.findByCardNumber(cardNumber);
-        if (byCardNumber == null) throw new NoSuchCardException("Карта по номеру " + cardNumber + " не найдена");
+        if (byCardNumber == null) throw new NoSuchCardException("Card by number " + cardNumber + " not found");
         return byCardNumber;
 
     }
 
-
     public void save(Card byCardNumber) {
-
             cardRepository.save(byCardNumber);
-
     }
 }

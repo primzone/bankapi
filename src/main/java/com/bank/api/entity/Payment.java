@@ -23,10 +23,6 @@ public class Payment {
     @JsonIgnore
     private Transaction transaction;
 
-    private String SenderAccountNumber;
-    private String recipientAccountNumber;
-
-
     public Payment() {
     }
 
@@ -64,19 +60,5 @@ public class Payment {
         this.transaction = transaction;
     }
 
-    public String getSenderAccountNumber() {
-        return SenderAccountNumber;
-    }
 
-    public void setSenderAccountNumber(String senderAccountNumber) {
-        SenderAccountNumber = senderAccountNumber;
-    }
-
-    public String getRecipientAccountNumber() {
-        return recipientAccountNumber;
-    }
-
-    public void setRecipientAccountNumber(String recipientAccountNumber) {
-        this.recipientAccountNumber = recipientAccountNumber;
-    }
 }
