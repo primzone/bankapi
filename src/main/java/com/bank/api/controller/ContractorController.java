@@ -1,15 +1,14 @@
 package com.bank.api.controller;
 
 import com.bank.api.entity.Contractor;
-import com.bank.api.entity.User;
-import com.bank.api.service.AccountService;
+import com.bank.api.responses.MyResponse;
 import com.bank.api.service.ContractorService;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -19,7 +18,7 @@ public class ContractorController {
     @Autowired
     ContractorService contractorService;
 
-    @GetMapping("/contractors/{id}")//просмотр всех контрагентов по userId
+    @GetMapping("/{id}/contractors")//просмотр всех контрагентов по userId
     public Set<Contractor> getAllContractorsByUserId(@PathVariable long id){
 
         Set<Contractor> allContractorsByUserId = contractorService.getAllContractorsByUserId(id);
@@ -28,9 +27,12 @@ public class ContractorController {
     }
 
     @PostMapping("/contractors")//добавить контрагента к юзеру через userId
-    public Contractor addContractor(@RequestBody Map<String, String> map){
-        System.out.println(1);
-        return contractorService.saveContractor(Long.parseLong(map.get("userId")), map.get("contractorName"));
+    public ResponseEntity<MyResponse>  addContractor(@RequestBody JsonNode jsonNode){
+
+        contractorService.saveContractor(jsonNode.get("userId").asLong(), jsonNode.get("contractorName").asText());
+        return new ResponseEntity<>(new MyResponse(true), HttpStatus.OK);
+
+
     }
 
 }

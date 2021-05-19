@@ -44,18 +44,13 @@ Content-Type: application/json
 }
 
 ### Просмотр списка карт
-GET http://localhost:8080/api/users/cards/1
+GET http://localhost:8080/api/users/cards/2
 Accept: application/json
 
 
 ### Проверка баланса на всех счетах
 GET http://localhost:8080/api/users/accounts/1
 Accept: application/json
-
-<> 2021-05-18T125854.200.json
-
-
-
 
 
 

@@ -1,12 +1,12 @@
 package com.bank.api.controller;
 
-import com.bank.api.entity.Account;
 import com.bank.api.entity.Card;
-import com.bank.api.entity.User;
+import com.bank.api.exception_handling.card_exceptions.NoSuchCardException;
+import com.bank.api.exception_handling.user_exceptions.NoSuchUserException;
+import com.bank.api.responses.MyResponse;
 import com.bank.api.service.CardService;
-import com.bank.api.service.UserService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,28 +23,41 @@ public class CardController {
     @GetMapping("/cards/{id}")//просмотр списка карт по id
     public List<Card> getAllCards(@PathVariable long id){
 
-        return cardService.getAllCardsFromUserId(id);
+        List<Card> allCardsFromUserId = cardService.getAllCardsFromUserId(id);
+
+        if (allCardsFromUserId == null || allCardsFromUserId.size() == 0){
+            throw new NoSuchCardException("No such cards with userId = " + id);
+        }
+
+        return allCardsFromUserId;
+
     }
 
     @PostMapping("/cards")//выпуск новой карты по счету
-    public void addCardToAccount(@RequestBody Map<String,String> map){
+    public void addCardToAccount(@RequestBody ObjectNode jsonNodes){
 
-        cardService.addCardToUser(map.get("accountNumber"));
+        cardService.addCardToUser(jsonNodes.get("accountNumber").asText());
     }
+
+
+
 
     @PostMapping("/cards/refill")//пополнение карты (счета через карту)
-    public void refillAccountByCard(@RequestBody Map<String,String> map){
+    public void refillAccountByCard(@RequestBody ObjectNode jsonNodes){
 
-        cardService.refillAccountByCard(map.get("cardNumber"), Double.parseDouble(map.get("amount")));
+       cardService.refillAccountByCard(jsonNodes.get("cardNumber").asText(), jsonNodes.get("amount").asDouble());
+
     }
 
-
     @PostMapping("/cards/transfer")//перевод контрагенту средств
-    public void transferToContractorAccount(@RequestBody Map<String,String> map){
 
-        cardService.transferToContractorAccount(map.get("cardNumber"),
-                map.get("contractorCardNumber"),
-                Double.parseDouble(map.get("amount")));
+    public MyResponse transferToContractorAccount(@RequestBody ObjectNode jsonNodes){
+
+        cardService.transferToContractorAccount(jsonNodes.get("cardNumber").asText(),
+                jsonNodes.get("contractorCardNumber").asText(),
+                jsonNodes.get("amount").asDouble());
+
+        return new MyResponse(true);
 
     }
 

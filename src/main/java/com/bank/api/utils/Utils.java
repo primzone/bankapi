@@ -12,7 +12,6 @@ public class Utils {
             sb.append(generateRandomNumber4digit()).append(" ");
         }
         sb.deleteCharAt(sb.length() - 1);
-
         return sb.toString();
     }
 

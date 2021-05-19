@@ -1,6 +1,7 @@
 package com.bank.api.service;
 
 import com.bank.api.entity.User;
+import com.bank.api.exception_handling.user_exceptions.NoSuchUserException;
 import com.bank.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +19,16 @@ public class UserService {
         return (List<User>) userRepository.findAll();
     }
 
-
-    public void addUser(User user) {
-        userRepository.save(user);
-    }
-
     public void saveUser(User user) {
         userRepository.save(user);
     }
 
-    public Optional<User> findById(long id) {
-        return userRepository.findById(id);
+    public User findById(long id) {
+
+        if (!userRepository.findById(id).isPresent()){
+            throw new NoSuchUserException("User by id = " + id + " not found");
+        }
+
+        return userRepository.findById(id).get();
     }
 }

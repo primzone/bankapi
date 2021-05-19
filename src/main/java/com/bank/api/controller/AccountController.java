@@ -2,6 +2,7 @@ package com.bank.api.controller;
 
 import com.bank.api.entity.Account;
 import com.bank.api.entity.User;
+import com.bank.api.exception_handling.account_exceptions.NoSuchAccountException;
 import com.bank.api.repository.AccountRepository;
 import com.bank.api.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,16 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
-    @GetMapping("/accounts/{id}")//просмотр всех счетов и баланса по userID
+    @GetMapping("/{id}/accounts")//просмотр всех счетов и баланса по userID
     public List<Account> showAllAccountsByUserId(@PathVariable long id){
 
         List<Account> allAccounts = accountService.getAllAccounts(id);
+
+        if (allAccounts == null || allAccounts.size() == 0)
+            throw new NoSuchAccountException("No such accounts by userId = " + id);
+
         return allAccounts;
+
 
     }
 

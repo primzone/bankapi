@@ -4,6 +4,7 @@ import com.bank.api.entity.Account;
 import com.bank.api.entity.Card;
 import com.bank.api.entity.Transaction;
 import com.bank.api.entity.User;
+import com.bank.api.exception_handling.transaction_exceptions.TransactionConfirmedException;
 import com.bank.api.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class EmployeeService {
 
     public void addAccountToUser(long userId) {
 
-        Account account = new Account(Utils.generateAccountNumber(), userService.findById(userId).get());
+        Account account = new Account(Utils.generateAccountNumber(), userService.findById(userId));
         accountService.save(account);
 
     }
@@ -49,20 +50,25 @@ public class EmployeeService {
 
     }
 
+
     public void confirmTransaction(long transactionNumber) {
 
         //Находим транзакцию по номеру
-        Transaction bytransactionNumber = transactionService.findBytransactionNumber(transactionNumber);
-        //Устанавливаем Потверждение = true и сохраняем
+        Transaction bytransactionNumber = transactionService.findByTransactionNumber(transactionNumber);
+        //Устанавливаем Потверждение = true
+        if (bytransactionNumber.isConfirmation())
+            throw new TransactionConfirmedException("transaction " + transactionNumber + " has already been confirmed");
         bytransactionNumber.setConfirmation(true);
-        transactionService.save(bytransactionNumber);
+
         //Находим счета по отправителя и получателся по транзакции
         Account senderAccount = accountService.findById(bytransactionNumber.getSenderAccountNumberId());
+        accountService.checkBalanceforTransaction(senderAccount, bytransactionNumber.getAmount());
         Account recipientAccount = accountService.findById(bytransactionNumber.getRecipientAccountNumberId());
         //Исправляем баланс счетов
         senderAccount.setBalance(senderAccount.getBalance() - bytransactionNumber.getAmount());
         recipientAccount.setBalance(recipientAccount.getBalance() + bytransactionNumber.getAmount());
-        //Сохраняем счета
+        //Сохраняем
+        transactionService.save(bytransactionNumber);
         accountService.save(senderAccount);
         accountService.save(recipientAccount);
 

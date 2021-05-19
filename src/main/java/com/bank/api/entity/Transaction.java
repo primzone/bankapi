@@ -122,4 +122,5 @@ public class Transaction {
     public void setRecipientCardNumber(String recipientCardNumber) {
         this.recipientCardNumber = recipientCardNumber;
     }
+
 }

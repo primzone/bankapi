@@ -10,7 +10,7 @@ drop table if exists usr CASCADE;
 
 create table account (
                          id int8 not null,
-                         account_number varchar(255),
+                         account_number varchar(20) UNIQUE ,
                          balance float8 not null,
                          contractor_id int8,
                          user_id int8,
@@ -19,7 +19,7 @@ create table account (
 
 create table card (
                       id int8 not null,
-                      card_number varchar(255),
+                      card_number varchar(19) UNIQUE,
                       confirmation boolean not null,
                       account_id int8,
                       primary key (id)

@@ -7,11 +7,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    Transaction findByTransactionNumber(long s);
+    Optional<Transaction> findByTransactionNumber(long s);
 
     @Query("SELECT MAX(t.transactionNumber) FROM Transaction t")
     long findMaxOfTransactionNumber();

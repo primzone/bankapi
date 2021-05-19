@@ -19,22 +19,18 @@ public class ContractorService {
 
     public Set<Contractor> getAllContractorsByUserId(long id) {
 
-        Optional<User> byId = userService.findById(id);
+        User user = userService.findById(id);
 
-        if (!byId.isPresent()) return new HashSet<Contractor>();
-
-
-
-        return byId.get().getContractors();
+        return user.getContractors();
     }
 
     @Transactional
     public Contractor saveContractor(long userId, String contractorName) {
 
         //получаем юзера по айди
-        Optional<User> byId = userService.findById(userId);
+        User user = userService.findById(userId);
         //создаем нового контрагента
-        Contractor contractor = new Contractor(contractorName, byId.get());
+        Contractor contractor = new Contractor(contractorName, user);
         //сохраняем
         contractorRepository.save(contractor);
 

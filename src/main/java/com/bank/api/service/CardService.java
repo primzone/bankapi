@@ -1,8 +1,13 @@
 package com.bank.api.service;
 
 import com.bank.api.entity.*;
+import com.bank.api.exception_handling.account_exceptions.InsufficientFundsOnAccountexception;
+import com.bank.api.exception_handling.account_exceptions.NoSuchAccountException;
+import com.bank.api.exception_handling.card_exceptions.NoSuchCardException;
+import com.bank.api.exception_handling.user_exceptions.NoSuchUserException;
 import com.bank.api.repository.CardRepository;
 import com.bank.api.utils.Utils;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +36,10 @@ public class CardService {
 
     public List<Card> getAllCardsFromUserId(long id) {
 
-       // cardRepository.fi
-        Optional<User> byId = userService.findById(id);
+        User user = userService.findById(id);
         List<Card> cardList = new ArrayList<>();
-        if (!byId.isPresent()) return new ArrayList<Card>();
 
-        User user = byId.get();
+        //Добавляем карты каждого счета в лист
         for (Account account: user.getAccounts()){
             cardList.addAll(account.getCards());
         }
@@ -49,6 +52,7 @@ public class CardService {
         Account byAccountNumber = accountService.findByAccountNumber(accountNumber);
         //добавляем к счету карту и сохраням
         byAccountNumber.addCardToAccount(new Card(Utils.generateCardNumber(), byAccountNumber));
+      //  byAccountNumber.addCardToAccount(new Card("0000 0000 0000 0000", byAccountNumber));
         accountService.save(byAccountNumber);
 
     }
@@ -56,7 +60,9 @@ public class CardService {
     public void refillAccountByCard(String cardNumber, Double amount) {
 
         //находим счет по номеру карты
-        Account byAccountNumber = accountService.findByCardsIsContaining(cardRepository.findByCardNumber(cardNumber));
+       // Account byAccountNumber = accountService.findByCardsIsContaining(findByCardNumber(cardNumber));
+        Account byAccountNumber = accountService.findById(findByCardNumber(cardNumber).getId());
+
         //добавляем к балансу
         byAccountNumber.setBalance(byAccountNumber.getBalance() + amount);
         //сохраняем
@@ -66,10 +72,13 @@ public class CardService {
     @Transactional
     public void transferToContractorAccount(String cardNumber, String contractorCardNumber, double amount) {
 
-        //находим счета отправителя и получателя
-        Account senderAccount = cardRepository.findByCardNumber(cardNumber).getAccount();
-        Account recipientAccount = cardRepository.findByCardNumber(contractorCardNumber).getAccount();
 
+        //находим счета отправителя и получателя
+        Account senderAccount = findByCardNumber(cardNumber).getAccount();
+        if (senderAccount == null) throw new NoSuchAccountException("Счет отправителя по карте " + cardNumber + " не найден");
+        accountService.checkBalanceforTransaction(senderAccount, amount);
+        Account recipientAccount = findByCardNumber(contractorCardNumber).getAccount();
+        if (recipientAccount == null) throw new NoSuchAccountException("Счет получателя по карте " + contractorCardNumber + " не найден");
         //получаем новый номер транзакции
         long newTransactionNumber = transactionService.findMaxOfTransactionNumber() + 1;
 
@@ -79,7 +88,6 @@ public class CardService {
                                                 amount, newTransactionNumber);
         transactionService.save(transaction);
 
-
         //создаем и сохраняем для каждого счета пеймент для ссылки на транзакцию
         Payment payment = new Payment(senderAccount, transaction);
         Payment payment2 = new Payment(recipientAccount, transaction);
@@ -87,15 +95,21 @@ public class CardService {
         paymentService.save(payment);
         paymentService.save(payment2);
 
-
     }
 
 
     public Card findByCardNumber(String cardNumber) {
-        return cardRepository.findByCardNumber(cardNumber);
+
+        Card byCardNumber = cardRepository.findByCardNumber(cardNumber);
+        if (byCardNumber == null) throw new NoSuchCardException("Карта по номеру " + cardNumber + " не найдена");
+        return byCardNumber;
+
     }
 
+
     public void save(Card byCardNumber) {
-        cardRepository.save(byCardNumber);
+
+            cardRepository.save(byCardNumber);
+
     }
 }

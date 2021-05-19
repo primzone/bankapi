@@ -1,13 +1,13 @@
 package com.bank.api.controller;
 
-import com.bank.api.entity.Account;
 import com.bank.api.entity.User;
+import com.bank.api.responses.MyResponse;
 import com.bank.api.service.EmployeeService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -17,9 +17,10 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @PostMapping("/users") //добавление нового юзера
-    public User addUser(@RequestBody User user){
+    public MyResponse addUser(@RequestBody User user){
         employeeService.saveUser(user);
-        return user;
+
+        return new MyResponse(true);
     }
 
     @GetMapping("/users") // показать всех юзеров
@@ -30,30 +31,30 @@ public class EmployeeController {
 
     }
 
-
     @PostMapping("/accounts") //добавление нового счета для юзера
-    public void addAccountToUser(@RequestBody Map<String, String> map){
+    public MyResponse addAccountToUser(@RequestBody ObjectNode jsonNodes){
 
-        employeeService.addAccountToUser(Long.parseLong(map.get("userId")));
-
+        employeeService.addAccountToUser(jsonNodes.get("userId").asLong());
+        return new MyResponse(true);
     }
 
     @PostMapping("/contractor/accounts") //добавление нового счета для контрагента
-    public void addAccountToContractor(@RequestBody Map<String, String> map){
+    public MyResponse addAccountToContractor(@RequestBody ObjectNode jsonNode){
 
-        employeeService.addAccountToContractor(Long.parseLong(map.get("contractorId")));
-
+        employeeService.addAccountToContractor(jsonNode.get("contractorId").asLong());
+        return new MyResponse(true);
     }
 
     @PutMapping("/card") //потверждение новой карты
-    public void confirmCard(@RequestBody Map<String, String> map){
-        employeeService.confirmCard(map.get("cardNumber"));
-
+    public MyResponse confirmCard(@RequestBody ObjectNode jsonNode){
+        employeeService.confirmCard(jsonNode.get("cardNumber").asText());
+        return new MyResponse(true);
     }
 
     @PutMapping("/transaction") //потверждение транзакции
-    public void confirmTransaction(@RequestBody Map<String, String> map){
-        employeeService.confirmTransaction(Long.parseLong(map.get("transactionNumber")));
+    public MyResponse confirmTransaction(@RequestBody ObjectNode jsonNodes){
+        employeeService.confirmTransaction(jsonNodes.get("transactionNumber").asLong());
+        return new MyResponse(true);
     }
 
 }
